@@ -5,7 +5,7 @@ from google.cloud import storage
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './service_account.json'
 
 
-def create_bucket_class_location():
+def create_bucket_class_location(bucket_name):
     """create new bucket in specific location with storage class"""
 
     # initialize client
@@ -26,6 +26,18 @@ def create_bucket_class_location():
     return new_bucket
 
 
+def get_specific_bucket(bucket_name):
+    """get single bucket"""
+
+    # initialize client
+    storage_client = storage.Client()
+
+    # retrieve a bucket
+    bucket = storage_client.get_bucket(bucket_name)
+
+    return bucket
+
+
 def get_list_of_buckets():
     """get list of buckets"""
 
@@ -41,17 +53,6 @@ def get_list_of_buckets():
 
     return list_of_buckets
 
-
-def get_specific_bucket():
-    """get single bucket"""
-
-    # initialize client
-    storage_client = storage.Client()
-
-    # retrieve a bucket
-    bucket = storage_client.get_bucket(bucket_name)
-
-    return bucket
 
 def upload_to_bucket(bucket_name, path_to_source_file, upload_file_name):
     """upload file to bucket"""
@@ -72,14 +73,22 @@ def upload_to_bucket(bucket_name, path_to_source_file, upload_file_name):
     except Exception as err:
         raise err
         sys.exit(1)
+    
+    else:
+        print(f"upload file '{path_to_source_file}' succeed")
 
     return None
 
 
-def download_file_from_bucket(bucket_name, path_to_storage_file_name, download_file_name):
+def download_specific_object(bucket_name, path_to_storage_file_name, download_file_name):
+    """download specific object from bucket"""
+
     try:
         # initialize client
         storage_client = storage.Client()
+
+        # initialize anonymous client
+        # storage_client = storage.Client.create_anonymous_client()
 
         # input bucket name
         bucket = storage_client.bucket(bucket_name)
@@ -93,15 +102,102 @@ def download_file_from_bucket(bucket_name, path_to_storage_file_name, download_f
     except Exception as err:
         raise err
         sys.exit(1)
+    
+    else:
+        print(f"download object '{path_to_storage_file_name}' succeed")
 
     return None
 
 
-bucket_name = 'agi_data_bucket'
-src_file_name = './src/ready_to_upload.txt'
+def get_list_of_objects(bucket_name, prefix=None, delimiter=None):
+    """get lists of all the blobs in the bucket"""
+
+    # initialize client
+    storage_client = storage.Client()
+
+    # get list objects
+    blobs = storage_client.list_blobs(bucket_name, prefix=prefix, delimiter=delimiter)
+
+    for blob in blobs:
+        print(blob.name)
+
+    if delimiter:
+        print("Prefixes:")
+        for prefix in blobs.prefixes:
+            print(prefix)
+
+    return None
+
+
+def copy_object(bucket_name, blob_name, destination_bucket_name, destination_blob_name):
+    """copies an object from one bucket to another with a new name."""
+
+    # initialize client
+    storage_client = storage.Client()
+
+    # select bucket name
+    source_bucket = storage_client.bucket(bucket_name)
+
+    # select object name
+    source_blob = source_bucket.blob(blob_name)
+
+    # set destination bucket name
+    destination_bucket = storage_client.bucket(destination_bucket_name)
+
+    # copy object
+    blob_copy = source_bucket.copy_blob(
+        source_blob, destination_bucket, destination_blob_name
+    )
+
+    print(
+        "object {} in bucket {} copied to blob {} in bucket {}.".format(
+            source_blob.name,
+            source_bucket.name,
+            blob_copy.name,
+            destination_bucket.name,
+        )
+    )
+
+
+def delete_object(bucket_name, blob_name):
+    """delete an object from the bucket"""
+
+    # initialize client
+    storage_client = storage.Client()
+
+    # input bucket name
+    bucket = storage_client.bucket(bucket_name)
+
+    # input object name
+    blob = bucket.blob(blob_name)
+
+    # delete object
+    blob.delete()
+
+    print("object {} deleted".format(blob_name))
+
+
+bucket_name = 'agi_dummy_bucket'
+src_file_name1 = './src/ready_to_upload_txt.txt'
+src_file_name2 = './src/ready_to_upload_txt2.txt'
+src_file_name3 = './src/ready_to_upload_img.jpg'
+src_file_name4 = './src/ready_to_upload_img2.jpg'
 
 # create_bucket_class_location(bucket_name)
+
+# print(get_specific_bucket(bucket_name))
 # print(get_list_of_buckets())
-# get_specific_bucket(bucket_name)
-# upload_to_bucket(bucket_name, src_file_name, 'src/dummy_text.txt')
-# download_file_from_bucket(bucket_name, 'src/dummy_text.txt', './src/download_text.txt')
+
+# upload_to_bucket(bucket_name, src_file_name1, 'src/download_txt.txt')
+# upload_to_bucket(bucket_name, src_file_name2, 'src/download_txt2.txt')
+# upload_to_bucket(bucket_name, src_file_name2, 'src/src2/download_txt2.txt')
+# upload_to_bucket(bucket_name, src_file_name3, 'download_img.jpg')
+# upload_to_bucket(bucket_name, src_file_name4, 'download_img2.jpg')
+
+# download_specific_object(bucket_name, 'download_img2.jpg', './src/download_img.jpg')
+
+# get_list_of_objects(bucket_name, 'src/', '/')
+
+# copy_object(bucket_name, 'src/copied_img.jpg', bucket_name, 'src/src2/copied_img2.jpg')
+
+# delete_object(bucket_name, 'src/src2/copied_img2.jpg')
