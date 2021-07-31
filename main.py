@@ -1,6 +1,7 @@
 import os
 import sys
 from google.cloud import storage
+from init_client import create_client
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './service_account.json'
 
@@ -8,11 +9,8 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './service_account.json'
 def create_bucket(bucket_name):
     """create new bucket in specific location with storage class"""
 
-    # initialize client
-    storage_client = storage.Client()
-    
-    # input the bucket name
-    bucket = storage_client.bucket(bucket_name)
+    # initialize client & get bucket
+    storage_client, bucket, _ = create_client(bucket_name)
 
     # set storage class, by default STANDARD
     bucket.storage_class = "COLDLINE"
@@ -23,17 +21,14 @@ def create_bucket(bucket_name):
     # print new bucket detail
     print(vars(bucket))
 
-    return new_bucket
+    return None
 
 
 def get_specific_bucket(bucket_name):
     """get a single bucket"""
 
-    # initialize client
-    storage_client = storage.Client()
-
-    # retrieve a bucket
-    bucket = storage_client.get_bucket(bucket_name)
+    # initialize client & get bucket
+    _, bucket, _ = create_client(bucket_name)
 
     return bucket
 
@@ -58,14 +53,8 @@ def upload_to_bucket(bucket_name, path_to_source_file, upload_file_name):
     """upload file to bucket"""
 
     try:
-        # initialize client
-        storage_client = storage.Client()
-
-        # input bucket name
-        bucket = storage_client.bucket(bucket_name)
-
-        # set the upload file name
-        blob = bucket.blob(upload_file_name)
+        # initialize client & get blob
+        _, _, blob = create_client(bucket_name, upload_file_name)
 
         # set the path to source file
         blob.upload_from_filename(path_to_source_file)
@@ -84,17 +73,8 @@ def download_specific_object(bucket_name, path_to_storage_file_name, download_fi
     """download specific object from bucket"""
 
     try:
-        # initialize client
-        storage_client = storage.Client()
-
-        # initialize anonymous client
-        # storage_client = storage.Client.create_anonymous_client()
-
-        # input bucket name
-        bucket = storage_client.bucket(bucket_name)
-
-        # set the storage object name
-        blob = bucket.blob(path_to_storage_file_name)
+        # initialize client & get blob
+        _, _, blob = create_client(bucket_name, path_to_storage_file_name)
 
         # set the path to source file
         blob.download_to_filename(download_file_name)
@@ -132,14 +112,8 @@ def get_list_of_objects(bucket_name, prefix=None, delimiter=None):
 def copy_object(bucket_name, blob_name, destination_bucket_name, destination_blob_name):
     """copies an object from one bucket to another with a new name"""
 
-    # initialize client
-    storage_client = storage.Client()
-
-    # select bucket name
-    source_bucket = storage_client.bucket(bucket_name)
-
-    # select object name
-    source_blob = source_bucket.blob(blob_name)
+    # initialize client, get bucket, & get blob
+    storage_client, source_bucket, source_blob = create_client(bucket_name, blob_name)
 
     # set destination bucket name
     destination_bucket = storage_client.bucket(destination_bucket_name)
@@ -162,14 +136,8 @@ def copy_object(bucket_name, blob_name, destination_bucket_name, destination_blo
 def delete_object(bucket_name, blob_name):
     """delete an object from the bucket"""
 
-    # initialize client
-    storage_client = storage.Client()
-
-    # input bucket name
-    bucket = storage_client.bucket(bucket_name)
-
-    # input object name
-    blob = bucket.blob(blob_name)
+    # initialize client, get bucket, & get blob
+    _, _, blob = create_client(bucket_name, blob_name)
 
     # delete object
     blob.delete()
@@ -199,6 +167,6 @@ src_file_name4 = './src/ready_to_upload_img2.jpg'
 # get_list_of_objects(bucket_name)
 # get_list_of_objects(bucket_name, 'src/', '/')
 
-# copy_object(bucket_name, 'src/copied_img.jpg', bucket_name, 'src/src2/copied_img2.jpg')
+# copy_object(bucket_name, 'download_img.jpg', bucket_name, 'src/src2/copied_img.jpg')
 
-# delete_object(bucket_name, 'src/src2/copied_img2.jpg')
+# delete_object(bucket_name, 'src/src2/copied_img.jpg')

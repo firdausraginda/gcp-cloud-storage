@@ -10,7 +10,7 @@ def set_iam_permission_bucket(bucket_name, role, member):
     """to set permissions in bucket level"""
 
     # initialize client & get bucket name
-    _, bucket, _= create_client(bucket_name)
+    _, bucket, _ = create_client(bucket_name)
 
     policy = bucket.get_iam_policy(requested_policy_version=3)
 
@@ -32,7 +32,7 @@ def remove_permission_from_bucket(bucket_name, role, member):
     """remove member from bucket"""
 
     # initialize client & get bucket name
-    _, bucket, _= create_client(bucket_name)
+    _, bucket, _ = create_client(bucket_name)
 
     policy = bucket.get_iam_policy(requested_policy_version=3)
     
