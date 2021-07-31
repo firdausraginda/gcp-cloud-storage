@@ -1,6 +1,7 @@
 import os
 from google.cloud import storage
 from init_client import create_client
+from set_role_and_member_permissions import *
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './service_account.json'
 
@@ -12,24 +13,15 @@ def set_iam_permission_bucket(bucket_name, role, member):
     _, bucket, _= create_client(bucket_name)
 
     policy = bucket.get_iam_policy(requested_policy_version=3)
-    
-    # set role
-    if role == 'own':
-        role_set = 'roles/storage.objectAdmin'
-    elif role == 'write':
-        role_set = 'roles/storage.objectCreator'
-    elif role == 'read':
-        role_set = 'roles/storage.objectViewer'
 
-    # set member
-    if member == 'public':
-        member_set = {f"allUsers"}
-    elif member == 'auth_public':
-        member_set = {f"allAuthenticatedUsers"}
-    else:
-        member_set = {f"user:{member}"}
+    # get member
+    member_set = get_member_bucket_level(member)
 
-    policy.bindings.append({"role": role_set, "members": member_set})
+    # get role
+    role_set = get_role_bucket_level(role)
+
+    # grant role to member
+    policy.bindings.append({"role": role_set, "members": {member_set}})
 
     bucket.set_iam_policy(policy)
 
@@ -44,25 +36,16 @@ def remove_permission_from_bucket(bucket_name, role, member):
 
     policy = bucket.get_iam_policy(requested_policy_version=3)
     
-    # set role
-    if role == 'own':
-        role_set = 'roles/storage.objectAdmin'
-    elif role == 'write':
-        role_set = 'roles/storage.objectCreator'
-    elif role == 'read':
-        role_set = 'roles/storage.objectViewer'
+    # get member
+    member_set = get_member_bucket_level(member)
 
-    # set member
-    if member == 'public':
-        member_set = "allUsers"
-    elif member == 'auth_public':
-        member_set = "allAuthenticatedUsers"
-    else:
-        member_set = f"user:{member}"
+    # get role
+    role_set = get_role_bucket_level(role)
 
     for binding in policy.bindings:
         # print(binding)
         if binding["role"] == role_set and binding.get("condition") is None:
+            # revoke role from member
             binding["members"].discard(member_set)
 
     bucket.set_iam_policy(policy)
@@ -73,28 +56,17 @@ def remove_permission_from_bucket(bucket_name, role, member):
 def set_access_control_list_object(bucket_name, object_name, role, member):
     """to set permissions in object level"""
 
-    # initialize client & get bucket name
-    _, bucket, _= create_client(bucket_name)
-
-    # input the object name
-    blob = bucket.blob(object_name)
+    # initialize client, get bucket, & get blob
+    _, bucket, blob = create_client(bucket_name, object_name)
 
     # Reload fetches the current ACL from Cloud Storage
     blob.acl.reload()
 
-    # set member
-    if member == 'public':
-        member_set = blob.acl.all()
-    elif member == 'auth_public':
-        member_set = blob.acl.all_authenticated()
-    else:
-        member_set = blob.acl.user(member)
+    # get member
+    member_set = get_member_object_level(member, blob)
     
-    # set role
-    if role == 'own':
-        member_set.grant_owner()
-    elif role == 'read':
-        member_set.grant_read()
+    # grant role to member
+    grant_role_object_level(role, member_set)
 
     blob.acl.save()
 
@@ -108,25 +80,14 @@ def set_access_control_list_object(bucket_name, object_name, role, member):
 def remove_permission_from_object(bucket_name, object_name, role, member):
     """remove member from access control list of an object"""
 
-    # initialize client & get bucket name
-    _, bucket, _= create_client(bucket_name)
-
-    # input the object name
-    blob = bucket.blob(object_name)
+    # initialize client, get bucket, & get blob
+    _, bucket, blob = create_client(bucket_name, object_name)
     
-    # set member
-    if member == 'public':
-        member_set = blob.acl.all()
-    elif member == 'auth_public':
-        member_set = blob.acl.all_authenticated()
-    else:
-        member_set = blob.acl.user(member)
+    # get member
+    member_set = get_member_object_level(member, blob)
         
-    # set role
-    if role == 'own':
-        member_set.grant_owner()
-    elif role == 'read':
-        member_set.revoke_read()
+    # revoke role from member
+    revoke_role_object_level(role, member_set)
 
     blob.acl.save()
 
@@ -140,18 +101,18 @@ bucket_name = 'agi_dummy_bucket'
 user_email = 'ragindaF22@gmail.com'
 obj_name = 'src/copied_img.jpg'
 
-# set_iam_permission_bucket(bucket_name, 'read', user_email)
-# set_iam_permission_bucket(bucket_name, 'read', 'auth_public')
-# set_iam_permission_bucket(bucket_name, 'read', 'public')
+# set_iam_permission_bucket(bucket_name, 'own', user_email)
+# set_iam_permission_bucket(bucket_name, 'own', 'auth_public')
+# set_iam_permission_bucket(bucket_name, 'own', 'public')
 
-# remove_permission_from_bucket(bucket_name, 'read', user_email)
-# remove_permission_from_bucket(bucket_name, 'read', 'auth_public')
-# remove_permission_from_bucket(bucket_name, 'read', 'public')
+# remove_permission_from_bucket(bucket_name, 'own', user_email)
+# remove_permission_from_bucket(bucket_name, 'own', 'auth_public')
+# remove_permission_from_bucket(bucket_name, 'own', 'public')
 
-# set_access_control_list_object(bucket_name, obj_name, 'read', user_email)
-# set_access_control_list_object(bucket_name, obj_name, 'read', 'public')
-# set_access_control_list_object(bucket_name, obj_name, 'read', 'auth_public')
+# set_access_control_list_object(bucket_name, obj_name, 'own', user_email)
+# set_access_control_list_object(bucket_name, obj_name, 'own', 'public')
+# set_access_control_list_object(bucket_name, obj_name, 'own', 'auth_public')
 
-# remove_permission_from_object(bucket_name, obj_name, 'read', user_email)
-# remove_permission_from_object(bucket_name, obj_name, 'read', 'public')
-# remove_permission_from_object(bucket_name, obj_name, 'read', 'auth_public')
+# remove_permission_from_object(bucket_name, obj_name, 'own', user_email)
+# remove_permission_from_object(bucket_name, obj_name, 'own', 'public')
+# remove_permission_from_object(bucket_name, obj_name, 'own', 'auth_public')
