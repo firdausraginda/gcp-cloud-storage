@@ -5,7 +5,7 @@ from google.cloud import storage
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './service_account.json'
 
 
-def create_bucket_class_location(bucket_name):
+def create_bucket(bucket_name):
     """create new bucket in specific location with storage class"""
 
     # initialize client
@@ -27,7 +27,7 @@ def create_bucket_class_location(bucket_name):
 
 
 def get_specific_bucket(bucket_name):
-    """get single bucket"""
+    """get a single bucket"""
 
     # initialize client
     storage_client = storage.Client()
@@ -39,7 +39,7 @@ def get_specific_bucket(bucket_name):
 
 
 def get_list_of_buckets():
-    """get list of buckets"""
+    """get list of all buckets"""
 
     # initialize client
     storage_client = storage.Client()
@@ -110,7 +110,7 @@ def download_specific_object(bucket_name, path_to_storage_file_name, download_fi
 
 
 def get_list_of_objects(bucket_name, prefix=None, delimiter=None):
-    """get lists of all the blobs in the bucket"""
+    """get lists of all the objects in the bucket"""
 
     # initialize client
     storage_client = storage.Client()
@@ -130,7 +130,7 @@ def get_list_of_objects(bucket_name, prefix=None, delimiter=None):
 
 
 def copy_object(bucket_name, blob_name, destination_bucket_name, destination_blob_name):
-    """copies an object from one bucket to another with a new name."""
+    """copies an object from one bucket to another with a new name"""
 
     # initialize client
     storage_client = storage.Client()
@@ -178,12 +178,13 @@ def delete_object(bucket_name, blob_name):
 
 
 bucket_name = 'agi_dummy_bucket'
+bucket_name2 = 'agi_dummy_bucket_2'
 src_file_name1 = './src/ready_to_upload_txt.txt'
 src_file_name2 = './src/ready_to_upload_txt2.txt'
 src_file_name3 = './src/ready_to_upload_img.jpg'
 src_file_name4 = './src/ready_to_upload_img2.jpg'
 
-# create_bucket_class_location(bucket_name)
+# create_bucket(bucket_name2)
 
 # print(get_specific_bucket(bucket_name))
 # print(get_list_of_buckets())
