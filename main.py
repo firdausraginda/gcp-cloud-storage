@@ -183,7 +183,7 @@ src_file_name2 = './src/ready_to_upload_txt2.txt'
 src_file_name3 = './src/ready_to_upload_img.jpg'
 src_file_name4 = './src/ready_to_upload_img2.jpg'
 
-# create_bucket(bucket_name2)
+# create_bucket(bucket_name)
 
 # print(get_specific_bucket(bucket_name))
 # print(get_list_of_buckets())
