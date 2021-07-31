@@ -178,7 +178,6 @@ def delete_object(bucket_name, blob_name):
 
 
 bucket_name = 'agi_dummy_bucket'
-bucket_name2 = 'agi_dummy_bucket_2'
 src_file_name1 = './src/ready_to_upload_txt.txt'
 src_file_name2 = './src/ready_to_upload_txt2.txt'
 src_file_name3 = './src/ready_to_upload_img.jpg'
@@ -197,6 +196,7 @@ src_file_name4 = './src/ready_to_upload_img2.jpg'
 
 # download_specific_object(bucket_name, 'download_img2.jpg', './src/download_img.jpg')
 
+# get_list_of_objects(bucket_name)
 # get_list_of_objects(bucket_name, 'src/', '/')
 
 # copy_object(bucket_name, 'src/copied_img.jpg', bucket_name, 'src/src2/copied_img2.jpg')

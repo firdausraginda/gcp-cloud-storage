@@ -11,4 +11,6 @@
 ```
 
 ## Reference
-https://cloud.google.com/storage/docs/downloading-objects
+- https://cloud.google.com/storage/docs/downloading-objects
+- https://cloud.google.com/storage/docs/access-control/iam-roles
+- https://googleapis.dev/python/storage/latest/buckets.html
