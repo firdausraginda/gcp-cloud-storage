@@ -1,9 +1,7 @@
 import os
 from google.cloud import storage
 from init_client import create_client
-from set_role_and_member_permissions import *
-
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './service_account.json'
+from set_role_and_member_permissions import get_member_bucket_level, get_role_bucket_level, get_member_object_level, grant_role_object_level, revoke_role_object_level
 
 
 def set_iam_permission_bucket(bucket_name, role, member):
@@ -99,7 +97,7 @@ def remove_permission_from_object(bucket_name, object_name, role, member):
 
 bucket_name = 'agi_dummy_bucket'
 user_email = 'ragindaF22@gmail.com'
-obj_name = 'src/copied_img.jpg'
+obj_name = 'src/src2/download_txt2.txt'
 
 # set_iam_permission_bucket(bucket_name, 'own', user_email)
 # set_iam_permission_bucket(bucket_name, 'own', 'auth_public')
@@ -113,6 +111,6 @@ obj_name = 'src/copied_img.jpg'
 # set_access_control_list_object(bucket_name, obj_name, 'own', 'public')
 # set_access_control_list_object(bucket_name, obj_name, 'own', 'auth_public')
 
-# remove_permission_from_object(bucket_name, obj_name, 'own', user_email)
-# remove_permission_from_object(bucket_name, obj_name, 'own', 'public')
-# remove_permission_from_object(bucket_name, obj_name, 'own', 'auth_public')
+remove_permission_from_object(bucket_name, obj_name, 'own', user_email)
+remove_permission_from_object(bucket_name, obj_name, 'own', 'public')
+remove_permission_from_object(bucket_name, obj_name, 'own', 'auth_public')
