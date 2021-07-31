@@ -111,6 +111,6 @@ obj_name = 'src/src2/download_txt2.txt'
 # set_access_control_list_object(bucket_name, obj_name, 'own', 'public')
 # set_access_control_list_object(bucket_name, obj_name, 'own', 'auth_public')
 
-remove_permission_from_object(bucket_name, obj_name, 'own', user_email)
-remove_permission_from_object(bucket_name, obj_name, 'own', 'public')
-remove_permission_from_object(bucket_name, obj_name, 'own', 'auth_public')
+# remove_permission_from_object(bucket_name, obj_name, 'own', user_email)
+# remove_permission_from_object(bucket_name, obj_name, 'own', 'public')
+# remove_permission_from_object(bucket_name, obj_name, 'own', 'auth_public')
