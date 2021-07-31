@@ -1,5 +1,6 @@
 import os
 from google.cloud import storage
+from init_client import create_client
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './service_account.json'
 
@@ -7,11 +8,8 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './service_account.json'
 def set_iam_permission_bucket(bucket_name, role, member):
     """to set permissions in bucket level"""
 
-    # initialize client
-    storage_client = storage.Client()
-
-    # input the bucket name
-    bucket = storage_client.bucket(bucket_name)
+    # initialize client & get bucket name
+    _, bucket, _= create_client(bucket_name)
 
     policy = bucket.get_iam_policy(requested_policy_version=3)
     
@@ -41,11 +39,8 @@ def set_iam_permission_bucket(bucket_name, role, member):
 def remove_permission_from_bucket(bucket_name, role, member):
     """remove member from bucket"""
 
-    # initialize client
-    storage_client = storage.Client()
-
-    # input the bucket name
-    bucket = storage_client.bucket(bucket_name)
+    # initialize client & get bucket name
+    _, bucket, _= create_client(bucket_name)
 
     policy = bucket.get_iam_policy(requested_policy_version=3)
     
@@ -78,11 +73,8 @@ def remove_permission_from_bucket(bucket_name, role, member):
 def set_access_control_list_object(bucket_name, object_name, role, member):
     """to set permissions in object level"""
 
-    # initialize client
-    storage_client = storage.Client()
-
-    # input the bucket name
-    bucket = storage_client.bucket(bucket_name)
+    # initialize client & get bucket name
+    _, bucket, _= create_client(bucket_name)
 
     # input the object name
     blob = bucket.blob(object_name)
@@ -116,11 +108,8 @@ def set_access_control_list_object(bucket_name, object_name, role, member):
 def remove_permission_from_object(bucket_name, object_name, role, member):
     """remove member from access control list of an object"""
 
-    # initialize client
-    storage_client = storage.Client()
-
-    # input the bucket name
-    bucket = storage_client.bucket(bucket_name)
+    # initialize client & get bucket name
+    _, bucket, _= create_client(bucket_name)
 
     # input the object name
     blob = bucket.blob(object_name)
