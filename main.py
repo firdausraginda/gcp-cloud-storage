@@ -1,7 +1,7 @@
 import os
 import sys
 from google.cloud import storage
-from init_client import create_client
+from setup.init_client import create_client
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './service_account.json'
 
@@ -22,6 +22,18 @@ def create_bucket(bucket_name):
     print(vars(bucket))
 
     return None
+
+
+def delete_bucket(bucket_name):
+    """deletes a bucket, but it must be empty first"""
+
+    # initialize client & get bucket
+    storage_client, bucket, _ = create_client(bucket_name)
+
+    # delete bucket
+    bucket.delete()
+
+    print("bucket {} deleted".format(bucket_name))
 
 
 def get_specific_bucket(bucket_name):
@@ -145,29 +157,30 @@ def delete_blob(bucket_name, blob_name):
     print("blob {} deleted".format(blob_name))
 
 
-bucket_name = 'agi_dummy_bucket2'
+bucket_name = 'agi_dummy_bucket'
 src_file_name1 = './src/ready_to_upload_txt.txt'
 src_file_name2 = './src/ready_to_upload_txt2.txt'
 src_file_name3 = './src/ready_to_upload_img.jpg'
 src_file_name4 = './src/ready_to_upload_img2.jpg'
 
 
-create_bucket(bucket_name)
+# create_bucket(bucket_name)
+# delete_bucket(bucket_name)
 
-print(get_specific_bucket(bucket_name))
-print(get_list_of_buckets())
+# print(get_specific_bucket(bucket_name))
+# print(get_list_of_buckets())
 
-upload_to_bucket(bucket_name, src_file_name1, 'src/download_txt.txt')
-upload_to_bucket(bucket_name, src_file_name2, 'src/download_txt2.txt')
-upload_to_bucket(bucket_name, src_file_name2, 'src/src2/download_txt2.txt')
-upload_to_bucket(bucket_name, src_file_name3, 'download_img.jpg')
-upload_to_bucket(bucket_name, src_file_name4, 'download_img2.jpg')
+# upload_to_bucket(bucket_name, src_file_name1, 'src/download_txt.txt')
+# upload_to_bucket(bucket_name, src_file_name2, 'src/download_txt2.txt')
+# upload_to_bucket(bucket_name, src_file_name2, 'src/src2/download_txt2.txt')
+# upload_to_bucket(bucket_name, src_file_name3, 'download_img.jpg')
+# upload_to_bucket(bucket_name, src_file_name4, 'download_img2.jpg')
 
-download_specific_blob(bucket_name, 'download_img2.jpg', './src/download_img.jpg')
+# download_specific_blob(bucket_name, 'download_img2.jpg', './src/download_img.jpg')
 
-get_list_of_blobs(bucket_name)
-get_list_of_blobs(bucket_name, 'src/', '/')
+# get_list_of_blobs(bucket_name)
+# get_list_of_blobs(bucket_name, 'src/', '/')
 
-copy_blob(bucket_name, 'download_img.jpg', bucket_name, 'src/src2/copied_img.jpg')
+# copy_blob(bucket_name, 'download_img.jpg', bucket_name, 'src/src2/copied_img.jpg')
 
 delete_blob(bucket_name, 'src/src2/copied_img.jpg')
