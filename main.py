@@ -69,8 +69,8 @@ def upload_to_bucket(bucket_name, path_to_source_file, upload_file_name):
     return None
 
 
-def download_specific_object(bucket_name, path_to_storage_file_name, download_file_name):
-    """download specific object from bucket"""
+def download_specific_blob(bucket_name, path_to_storage_file_name, download_file_name):
+    """download specific blob from bucket"""
 
     try:
         # initialize client & get blob
@@ -84,18 +84,18 @@ def download_specific_object(bucket_name, path_to_storage_file_name, download_fi
         sys.exit(1)
     
     else:
-        print(f"download object '{path_to_storage_file_name}' succeed")
+        print(f"download blob '{path_to_storage_file_name}' succeed")
 
     return None
 
 
-def get_list_of_objects(bucket_name, prefix=None, delimiter=None):
-    """get lists of all the objects in the bucket"""
+def get_list_of_blobs(bucket_name, prefix=None, delimiter=None):
+    """get lists of all the blobs in the bucket"""
 
     # initialize client
     storage_client = storage.Client()
 
-    # get list objects
+    # get list blobs
     blobs = storage_client.list_blobs(bucket_name, prefix=prefix, delimiter=delimiter)
 
     for blob in blobs:
@@ -109,8 +109,8 @@ def get_list_of_objects(bucket_name, prefix=None, delimiter=None):
     return None
 
 
-def copy_object(bucket_name, blob_name, destination_bucket_name, destination_blob_name):
-    """copies an object from one bucket to another with a new name"""
+def copy_blob(bucket_name, blob_name, destination_bucket_name, destination_blob_name):
+    """copies an blob from one bucket to another with a new name"""
 
     # initialize client, get bucket, & get blob
     storage_client, source_bucket, source_blob = create_client(bucket_name, blob_name)
@@ -118,13 +118,13 @@ def copy_object(bucket_name, blob_name, destination_bucket_name, destination_blo
     # set destination bucket name
     destination_bucket = storage_client.bucket(destination_bucket_name)
 
-    # copy object
+    # copy blob
     blob_copy = source_bucket.copy_blob(
         source_blob, destination_bucket, destination_blob_name
     )
 
     print(
-        "object {} in bucket {} copied to blob {} in bucket {}.".format(
+        "blob {} in bucket {} copied to blob {} in bucket {}.".format(
             source_blob.name,
             source_bucket.name,
             blob_copy.name,
@@ -133,40 +133,41 @@ def copy_object(bucket_name, blob_name, destination_bucket_name, destination_blo
     )
 
 
-def delete_object(bucket_name, blob_name):
-    """delete an object from the bucket"""
+def delete_blob(bucket_name, blob_name):
+    """delete an blob from the bucket"""
 
     # initialize client, get bucket, & get blob
     _, _, blob = create_client(bucket_name, blob_name)
 
-    # delete object
+    # delete blob
     blob.delete()
 
-    print("object {} deleted".format(blob_name))
+    print("blob {} deleted".format(blob_name))
 
 
-bucket_name = 'agi_dummy_bucket'
+bucket_name = 'agi_dummy_bucket2'
 src_file_name1 = './src/ready_to_upload_txt.txt'
 src_file_name2 = './src/ready_to_upload_txt2.txt'
 src_file_name3 = './src/ready_to_upload_img.jpg'
 src_file_name4 = './src/ready_to_upload_img2.jpg'
 
-# create_bucket(bucket_name)
 
-# print(get_specific_bucket(bucket_name))
-# print(get_list_of_buckets())
+create_bucket(bucket_name)
 
-# upload_to_bucket(bucket_name, src_file_name1, 'src/download_txt.txt')
-# upload_to_bucket(bucket_name, src_file_name2, 'src/download_txt2.txt')
-# upload_to_bucket(bucket_name, src_file_name2, 'src/src2/download_txt2.txt')
-# upload_to_bucket(bucket_name, src_file_name3, 'download_img.jpg')
-# upload_to_bucket(bucket_name, src_file_name4, 'download_img2.jpg')
+print(get_specific_bucket(bucket_name))
+print(get_list_of_buckets())
 
-# download_specific_object(bucket_name, 'download_img2.jpg', './src/download_img.jpg')
+upload_to_bucket(bucket_name, src_file_name1, 'src/download_txt.txt')
+upload_to_bucket(bucket_name, src_file_name2, 'src/download_txt2.txt')
+upload_to_bucket(bucket_name, src_file_name2, 'src/src2/download_txt2.txt')
+upload_to_bucket(bucket_name, src_file_name3, 'download_img.jpg')
+upload_to_bucket(bucket_name, src_file_name4, 'download_img2.jpg')
 
-# get_list_of_objects(bucket_name)
-# get_list_of_objects(bucket_name, 'src/', '/')
+download_specific_blob(bucket_name, 'download_img2.jpg', './src/download_img.jpg')
 
-# copy_object(bucket_name, 'download_img.jpg', bucket_name, 'src/src2/copied_img.jpg')
+get_list_of_blobs(bucket_name)
+get_list_of_blobs(bucket_name, 'src/', '/')
 
-# delete_object(bucket_name, 'src/src2/copied_img.jpg')
+copy_blob(bucket_name, 'download_img.jpg', bucket_name, 'src/src2/copied_img.jpg')
+
+delete_blob(bucket_name, 'src/src2/copied_img.jpg')

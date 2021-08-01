@@ -4,8 +4,8 @@ from google.cloud import storage
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './service_account.json'
 
 
-def create_client(bucket_name, object_name=None):
-    """create client, get bucket, & get blob/object"""
+def create_client(bucket_name, blob_name=None):
+    """create client, get bucket, & get blob/blob"""
 
     # initialize client
     storage_client = storage.Client()
@@ -16,9 +16,9 @@ def create_client(bucket_name, object_name=None):
     # input the bucket name
     bucket = storage_client.bucket(bucket_name)
 
-    # input the object name
-    if object_name:
-        blob = bucket.blob(object_name)
+    # input the blob name
+    if blob_name:
+        blob = bucket.blob(blob_name)
     else:
         blob = None
 
