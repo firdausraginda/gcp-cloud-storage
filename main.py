@@ -183,4 +183,4 @@ src_file_name4 = './src/ready_to_upload_img2.jpg'
 
 # copy_blob(bucket_name, 'download_img.jpg', bucket_name, 'src/src2/copied_img.jpg')
 
-delete_blob(bucket_name, 'src/src2/copied_img.jpg')
+# delete_blob(bucket_name, 'src/src2/copied_img.jpg')
